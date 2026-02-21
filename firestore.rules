@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check roles
+    function hasRole(role) {
+      return request.auth != null && request.auth.token.role == role;
+    }
+
+    // Public Participant Profile (General Info)
+    match /participants/{participantId} {
+      // Allow staff and admins to read basic profile
+      allow read: if request.auth != null; 
+      allow write: if hasRole('Admin');
+
+      // SENSITIVE DATA: Financials (budget_total, budget_remaining)
+      // This ensures only Admins can see the budget fields.
+      match /private/financial {
+        allow read: if hasRole('Admin');
+        allow write: if hasRole('Admin');
+      }
+    }
+
+    match /shifts/{shiftId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
