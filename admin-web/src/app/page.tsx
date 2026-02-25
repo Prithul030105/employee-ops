@@ -1,50 +1,324 @@
-export default function AdminDashboard() {
+'use client'
+
+import Link from "next/link"
+import { useState } from "react"
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts"
+
+/* ============================= */
+/* DATA */
+/* ============================= */
+
+const financialData = [
+  { month: "Jan", revenue: 450000, labor: 360000, pending: 42000 },
+  { month: "Feb", revenue: 520000, labor: 390000, pending: 38000 },
+  { month: "Mar", revenue: 610000, labor: 470000, pending: 45000 },
+  { month: "Apr", revenue: 700000, labor: 560000, pending: 41000 },
+]
+
+const totalRevenue = financialData.reduce((s, i) => s + i.revenue, 0)
+const totalLabor = financialData.reduce((s, i) => s + i.labor, 0)
+const totalPending = financialData.reduce((s, i) => s + i.pending, 0)
+const netMargin = ((totalRevenue - totalLabor) / totalRevenue) * 100
+
+const dexChartData = [
+  { category: "Completed", sessions: 282 },
+  { category: "Missing", sessions: 18 },
+]
+
+const alertsData = [
+  {
+    id: 1,
+    title: "High-Risk Incident – Zone 4",
+    severity: "high",
+    zone: "Zone 4",
+    description:
+      "Medication non-compliance reported in 3 consecutive sessions.",
+    trend: "-12% wellness drop",
+  },
+  {
+    id: 2,
+    title: "Staff Burnout Risk – Zone 2",
+    severity: "medium",
+    zone: "Zone 2",
+    description:
+      "Overtime hours exceeded threshold for 4 staff members this month.",
+    trend: "+18% workload increase",
+  },
+  {
+    id: 3,
+    title: "Compliance Gap – Zone 1",
+    severity: "low",
+    zone: "Zone 1",
+    description:
+      "8 sessions missing mandatory progress documentation.",
+    trend: "DEX risk +6%",
+  },
+]
+
+const zoneRiskData = [
+  { name: "Zone 1", value: 1 },
+  { name: "Zone 2", value: 2 },
+  { name: "Zone 4", value: 4 },
+]
+
+/* ============================= */
+/* DASHBOARD */
+/* ============================= */
+
+export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex font-sans">
-      {/* Premium Navigation Sidebar */}
-      <aside className="w-72 bg-[#0F172A] text-white p-8 hidden lg:flex flex-col border-r border-slate-800">
-        <div className="mb-12 px-2">
-          <span className="text-2xl font-black tracking-tighter italic">HANSONIUM<span className="text-blue-500">.</span></span>
+    <div className="min-h-screen bg-[#faf9f7] text-[#1a1a2e] overflow-x-hidden">
+
+      {/* HEADER */}
+      <header className="bg-[#1a1a2e] text-white">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-10 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+          <h1 className="text-lg sm:text-xl md:text-2xl font-(--font-playfair)] text-center sm:text-left wrap-break-words">
+            Hansonium Agentic OS
+          </h1>
+
+          <div className="flex flex-wrap justify-center sm:justify-end items-center gap-3 text-xs sm:text-sm">
+            <span className="bg-[#4ade80] text-[#1a1a2e] px-3 py-1 rounded-full font-semibold whitespace-nowrap">
+              CEO
+            </span>
+            <span className="opacity-70 whitespace-nowrap">
+              Updated 5 mins ago
+            </span>
+          </div>
+
         </div>
-        <nav className="space-y-4 flex-1">
-          <div className="bg-blue-600 text-white p-4 rounded-2xl font-bold text-sm shadow-lg shadow-blue-900/20">Executive Hub</div>
-          <div className="text-slate-400 p-4 hover:bg-white/5 rounded-2xl font-medium text-sm transition-all cursor-pointer">DEX Compliance</div>
-          <div className="text-slate-400 p-4 hover:bg-white/5 rounded-2xl font-medium text-sm transition-all cursor-pointer">Staff Oversight</div>
-        </nav>
-      </aside>
+      </header>
 
-      <main className="flex-1 p-12 max-w-7xl mx-auto overflow-y-auto">
-        <header className="flex justify-between items-end mb-16">
-          <div>
-            <span className="text-blue-600 font-bold uppercase tracking-[0.2em] text-[10px]">Administrative Suite</span>
-            <h1 className="text-5xl font-black text-slate-900 tracking-tight mt-2">Command Center</h1>
-          </div>
-          <button className="bg-[#1A56DB] text-white px-8 py-4 rounded-2xl font-bold shadow-[0_20px_40px_-10px_rgba(26,86,219,0.4)] hover:scale-105 transition-all">
-            Export NDIS Batch
-          </button>
-        </header>
+      <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-10 py-6 sm:py-8 space-y-10">
 
-        {/* Top KPI Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
-          <div className="bg-white p-10 rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Gross Revenue</p>
-            <h3 className="text-5xl font-black text-slate-900 tracking-tighter">$1.24M</h3>
-            <div className="mt-4 inline-flex items-center px-3 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-lg">↑ 12.4%</div>
+        {/* FINANCIAL PULSE */}
+        <section className="bg-white rounded-2xl border border-[#e8e4dd] p-4 sm:p-6 md:p-8 space-y-8">
+
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold">
+            Financial Pulse
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <ExecMetric label="Revenue" value={`$${totalRevenue.toLocaleString()}`} />
+            <ExecMetric label="Labor" value={`$${totalLabor.toLocaleString()}`} danger />
+            <ExecMetric label="Pending" value={`$${totalPending.toLocaleString()}`} success />
+            <ExecMetric label="Net Margin" value={`${netMargin.toFixed(1)}%`} />
           </div>
-          <div className="bg-white p-10 rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Compliance Purity</p>
-            <h3 className="text-5xl font-black text-slate-900 tracking-tighter">98.5%</h3>
-            <div className="w-full bg-slate-100 h-3 rounded-full mt-6 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-400 h-full" style={{ width: '98.5%' }}></div>
+
+          <div className="w-full h-64 sm:h-72 md:h-80 lg:h-96">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={financialData}>
+                <CartesianGrid stroke="#f0ede6" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `$${v / 1000}k`} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="revenue" fill="#4ade80" />
+                <Bar dataKey="labor" fill="#ef4444" />
+                <Bar dataKey="pending" fill="#eab308" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+        </section>
+
+        {/* DEX COMPLIANCE */}
+        <section className="bg-white rounded-2xl border border-[#e8e4dd] p-4 sm:p-6 md:p-8 space-y-6">
+
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div className="space-y-1">
+              <h2 className="text-base sm:text-lg md:text-xl font-semibold">
+                DEX Compliance – Q2 2026
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500">
+                12 Days Remaining
+              </p>
             </div>
+
+            <Link
+              href="/non-compliant"
+              className="bg-[#1a1a2e] text-white px-4 py-2 rounded-lg text-sm w-full sm:w-auto text-center whitespace-nowrap"
+            >
+              View Non-Compliant
+            </Link>
           </div>
-          <div className="bg-white p-10 rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Active Participants</p>
-            <h3 className="text-5xl font-black text-slate-900 tracking-tighter">142</h3>
-            <p className="text-sm font-bold text-slate-400 mt-4">Verified SLK-581</p>
+
+          <div className="w-full h-60 sm:h-64 md:h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dexChartData}>
+                <CartesianGrid stroke="#f0ede6" vertical={false} />
+                <XAxis dataKey="category" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="sessions" fill="#1a1a2e" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-        </div>
+
+        </section>
+
+        {/* STRATEGIC ALERTS */}
+        <section className="bg-white rounded-2xl border border-[#e8e4dd] p-4 sm:p-6 md:p-8">
+          <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-6">
+            Strategic Alerts
+          </h2>
+
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+            <div className="xl:col-span-8 space-y-4">
+              {alertsData.map(alert => (
+                <AlertExpandable key={alert.id} alert={alert} />
+              ))}
+            </div>
+
+            <div className="xl:col-span-4 bg-[#faf9f7] rounded-xl border border-[#e8e4dd] p-4 sm:p-6">
+              <div className="w-full h-64 sm:h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={zoneRiskData}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius="75%"
+                      label
+                    >
+                      {zoneRiskData.map((_, i) => (
+                        <Cell key={i} fill={["#4ade80", "#facc15", "#ef4444"][i]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* AI INSIGHTS */}
+        <section className="bg-white rounded-2xl border border-[#e8e4dd] p-4 sm:p-6 md:p-8 space-y-6">
+
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold">
+              AI Insights
+            </h2>
+            <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+              Predictive & Risk Intelligence
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <InsightCard
+              title="Revenue Forecast"
+              description="Projected 8% revenue growth next quarter based on current trend velocity."
+              impact="Positive"
+            />
+            <InsightCard
+              title="Compliance Risk Alert"
+              description="If missing session documentation exceeds 25, DEX score may drop below 4.0."
+              impact="Warning"
+            />
+            <InsightCard
+              title="Labor Cost Optimization"
+              description="Reducing overtime in Zone 2 could improve net margin by 2.4%."
+              impact="Action Required"
+            />
+          </div>
+
+        </section>
+
       </main>
     </div>
-  );
+  )
+}
+
+/* ============================= */
+/* COMPONENTS */
+/* ============================= */
+
+function ExecMetric({ label, value, danger, success }: any) {
+  const border = danger
+    ? "border-red-500"
+    : success
+    ? "border-[#4ade80]"
+    : "border-[#1a1a2e]"
+
+  return (
+    <div className={`bg-[#faf9f7] border-2 ${border} p-5 rounded-xl`}>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-lg md:text-2xl font-bold font-[var(--font-mono)] break-words">
+        {value}
+      </p>
+    </div>
+  )
+}
+
+function AlertExpandable({ alert }: any) {
+  const [open, setOpen] = useState(false)
+
+  const severityBorder =
+    alert.severity === "high"
+      ? "border-red-500"
+      : alert.severity === "medium"
+      ? "border-yellow-500"
+      : "border-green-500"
+
+  return (
+    <div className="border rounded-xl overflow-hidden">
+      <div
+        className={`p-4 cursor-pointer border-l-4 ${severityBorder}`}
+        onClick={() => setOpen(!open)}
+      >
+        <div className="flex justify-between items-center gap-4">
+          <p className="font-medium break-words">{alert.title}</p>
+          <span className="flex-shrink-0">
+            {open ? "▲" : "▼"}
+          </span>
+        </div>
+      </div>
+
+      {open && (
+        <div className="p-4 bg-[#faf9f7] border-t text-sm text-gray-600 space-y-2">
+          <p><strong>Zone:</strong> {alert.zone}</p>
+          <p>{alert.description}</p>
+          <p className="font-medium">{alert.trend}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function InsightCard({ title, description, impact }: any) {
+  const impactStyles =
+    impact === "Positive"
+      ? "bg-[#4ade80]/20 text-[#15803d]"
+      : impact === "Warning"
+      ? "bg-yellow-100 text-yellow-700"
+      : "bg-red-100 text-red-600"
+
+  return (
+    <div className="bg-[#faf9f7] border border-[#e8e4dd] rounded-xl p-5 space-y-3 hover:shadow-md transition">
+      <div className="flex justify-between items-start gap-3">
+        <h3 className="font-semibold break-words">{title}</h3>
+        <span className={`text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap ${impactStyles}`}>
+          {impact}
+        </span>
+      </div>
+      <p className="text-sm text-gray-600 leading-relaxed">
+        {description}
+      </p>
+    </div>
+  )
 }
