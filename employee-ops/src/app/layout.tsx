@@ -1,10 +1,7 @@
-"use client";
-
-// rest of your code...
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Sidebar from "./components/Sidebar";
+import SidebarWrapper from "./SidebarWrapper";
 import "leaflet/dist/leaflet.css";
 
 const geistSans = Geist({
@@ -33,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex h-screen bg-gray-100">
-          <Sidebar isOpen={true} closeSidebar={() => {}} />
+          <SidebarWrapper />
           <main className="flex-1 p-8 overflow-auto">
             {children}
           </main>
