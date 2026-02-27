@@ -74,7 +74,7 @@ export default function DexAuditLab() {
           }
         : session
     );
-    setSessions(updated);
+    setSessions(updated as Session[]);
     setSelected([]);
   };
 
